@@ -103,9 +103,11 @@ app.use('/api', userRoutes);
 
 // Route d'accueil
 app.get('/', (req, res) => {
+    // Utilise l'URL fournie par Render ou localhost en développement
+    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
     res.json({
         message: "API Bancaire - Bienvenue !",
-        documentation: "http://localhost:3000/api-docs"
+        documentation: `${baseUrl}/api-docs`
     });
 });
 

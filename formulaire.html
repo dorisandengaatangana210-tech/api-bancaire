@@ -1,0 +1,551 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏦 Mon API Bancaire</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 30px auto; padding: 20px; background: #f4f7f6; }
+        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input, button, select { padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; }
+        button { background: #2c7da0; color: white; cursor: pointer; border: none; font-weight: bold; }
+        button:hover { background: #1f5068; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+        .user-item { border-bottom: 1px solid #eee; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        .user-info { flex-grow: 1; }
+        .user-actions { display: flex; gap: 10px; }
+        .error { color: red; }
+        .success { color: green; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal-content { background: white; margin: 15% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; }
+        .transaction-form { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0; }
+        pre { background: #f0f0f0; padding: 10px; border-radius: 8px; overflow-x: auto; }
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #e9ecef; border: none; cursor: pointer; }
+        .tab.active { background: #2c7da0; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="tabs">
+    <button class="tab active" onclick="showTab('users')">👥 Utilisateurs</button>
+    <button class="tab" onclick="showTab('transactions')">💸 Transactions</button>
+    <button class="tab" onclick="showTab('history')">📊 Historique</button>
+</div>
+
+<!-- Onglet Utilisateurs -->
+<div id="users" class="tab-content active">
+    <div class="card">
+        <h1>➕ Ajouter un utilisateur</h1>
+        <input type="text" id="name" placeholder="Nom complet" style="width: 95%;">
+        <input type="email" id="email" placeholder="Email" style="width: 95%;">
+        <input type="number" id="balance" placeholder="Solde initial (€)" style="width: 95%;">
+        <button id="addBtn">✨ Ajouter l'utilisateur</button>
+        <div id="formMessage"></div>
+    </div>
+
+    <div class="card">
+        <h1>📋 Gestion des utilisateurs</h1>
+        <button id="refreshBtn" style="background: #61a5c2;">⟳ Actualiser la liste</button>
+        <div id="userList">
+            <p>Chargement de la liste...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Onglet Transactions -->
+<div id="transactions" class="tab-content">
+    <div class="card">
+        <h1>💰 Effectuer une transaction</h1>
+        <div class="transaction-form">
+            <h3>Dépôt</h3>
+            <select id="depositUser">
+                <option value="">Sélectionner un utilisateur</option>
+            </select>
+            <input type="number" id="depositAmount" placeholder="Montant (€)" step="0.01">
+            <button id="depositBtn" class="btn-success">💰 Déposer</button>
+        </div>
+
+        <div class="transaction-form">
+            <h3>Retrait</h3>
+            <select id="withdrawUser">
+                <option value="">Sélectionner un utilisateur</option>
+            </select>
+            <input type="number" id="withdrawAmount" placeholder="Montant (€)" step="0.01">
+            <button id="withdrawBtn" class="btn-danger">💸 Retirer</button>
+        </div>
+
+        <div class="transaction-form">
+            <h3>Virement</h3>
+            <select id="fromUser">
+                <option value="">De (expéditeur)</option>
+            </select>
+            <select id="toUser">
+                <option value="">Vers (destinataire)</option>
+            </select>
+            <input type="number" id="transferAmount" placeholder="Montant (€)" step="0.01">
+            <button id="transferBtn">🔄 Transférer</button>
+        </div>
+        <div id="transactionMessage"></div>
+    </div>
+</div>
+
+<!-- Onglet Historique -->
+<div id="history" class="tab-content">
+    <div class="card">
+        <h1>📊 Historique des transactions</h1>
+        <select id="historyUser">
+            <option value="">Sélectionner un utilisateur</option>
+        </select>
+        <button id="loadHistoryBtn">📋 Charger l'historique</button>
+        <div id="historyList">
+            <p>Sélectionnez un utilisateur pour voir son historique.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de modification -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h2>✏️ Modifier l'utilisateur</h2>
+        <input type="text" id="editName" placeholder="Nom complet">
+        <input type="email" id="editEmail" placeholder="Email">
+        <input type="number" id="editBalance" placeholder="Solde (€)" step="0.01">
+        <button id="saveEditBtn">💾 Sauvegarder</button>
+        <button onclick="closeModal()">❌ Annuler</button>
+        <div id="editMessage"></div>
+    </div>
+</div>
+
+<script>
+    // --- Configuration ---
+    const API_BASE_URL = window.location.origin;
+    const USERS_URL = `${API_BASE_URL}/api/users`;
+
+    // --- Variables globales ---
+    let currentUsers = [];
+    let editingUserId = null;
+
+    // --- Éléments du DOM ---
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const balanceInput = document.getElementById('balance');
+    const addBtn = document.getElementById('addBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const userListDiv = document.getElementById('userList');
+    const formMessageDiv = document.getElementById('formMessage');
+
+    // Éléments transactions
+    const depositUser = document.getElementById('depositUser');
+    const depositAmount = document.getElementById('depositAmount');
+    const depositBtn = document.getElementById('depositBtn');
+    const withdrawUser = document.getElementById('withdrawUser');
+    const withdrawAmount = document.getElementById('withdrawAmount');
+    const withdrawBtn = document.getElementById('withdrawBtn');
+    const fromUser = document.getElementById('fromUser');
+    const toUser = document.getElementById('toUser');
+    const transferAmount = document.getElementById('transferAmount');
+    const transferBtn = document.getElementById('transferBtn');
+    const transactionMessageDiv = document.getElementById('transactionMessage');
+
+    // Éléments historique
+    const historyUser = document.getElementById('historyUser');
+    const loadHistoryBtn = document.getElementById('loadHistoryBtn');
+    const historyListDiv = document.getElementById('historyList');
+
+    // Éléments modal
+    const editModal = document.getElementById('editModal');
+    const editName = document.getElementById('editName');
+    const editEmail = document.getElementById('editEmail');
+    const editBalance = document.getElementById('editBalance');
+    const saveEditBtn = document.getElementById('saveEditBtn');
+    const editMessageDiv = document.getElementById('editMessage');
+
+    // --- Gestion des onglets ---
+    function showTab(tabName) {
+        // Masquer tous les onglets
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+        // Afficher l'onglet sélectionné
+        document.getElementById(tabName).classList.add('active');
+        event.target.classList.add('active');
+
+        // Recharger les données si nécessaire
+        if (tabName === 'users') loadUsers();
+        if (tabName === 'transactions') populateUserSelects();
+        if (tabName === 'history') populateHistorySelect();
+    }
+
+    // --- Fonction pour afficher la liste des utilisateurs ---
+    async function loadUsers() {
+        userListDiv.innerHTML = '<p>⏳ Chargement...</p>';
+        try {
+            const response = await fetch(USERS_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+
+            if (data.success && data.users) {
+                currentUsers = data.users;
+                if (data.users.length === 0) {
+                    userListDiv.innerHTML = '<p>Aucun utilisateur pour le moment.</p>';
+                    return;
+                }
+                // Générer l'affichage des utilisateurs
+                let html = '<div style="max-height: 400px; overflow-y: auto;">';
+                data.users.forEach(user => {
+                    html += `
+                        <div class="user-item">
+                            <div class="user-info">
+                                <strong>${escapeHtml(user.name)}</strong><br>
+                                <small>📧 ${escapeHtml(user.email)} | 💰 ${user.balance} € | 🆔 ${user.id}</small>
+                            </div>
+                            <div class="user-actions">
+                                <button onclick="editUser(${user.id})" style="background: #ffc107; color: black;">✏️</button>
+                                <button onclick="deleteUser(${user.id})" class="btn-danger">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div><p><small>📊 Total : ${data.users.length} utilisateur(s)</small></p>';
+                userListDiv.innerHTML = html;
+            } else {
+                userListDiv.innerHTML = '<p class="error">❌ Format de réponse inattendu.</p>';
+            }
+        } catch (error) {
+            console.error("Erreur chargement:", error);
+            userListDiv.innerHTML = `<p class="error">❌ Impossible de charger la liste. Vérifiez que l'API est accessible.</p>`;
+        }
+    }
+
+    // --- Fonction pour ajouter un utilisateur (POST) ---
+    async function addUser() {
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const balance = parseFloat(balanceInput.value);
+
+        if (!name || !email) {
+            formMessageDiv.innerHTML = '<p class="error">❌ Le nom et l\'email sont obligatoires.</p>';
+            return;
+        }
+
+        const newUser = { name, email, balance: isNaN(balance) ? 0 : balance };
+
+        formMessageDiv.innerHTML = '<p>⏳ Envoi en cours...</p>';
+        addBtn.disabled = true;
+
+        try {
+            const response = await fetch(USERS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newUser)
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                formMessageDiv.innerHTML = `<p class="success">✅ ${data.message || 'Utilisateur ajouté !'}</p>`;
+                // Vider le formulaire
+                nameInput.value = '';
+                emailInput.value = '';
+                balanceInput.value = '';
+                // Recharger la liste automatiquement
+                loadUsers();
+                populateUserSelects();
+                populateHistorySelect();
+            } else {
+                formMessageDiv.innerHTML = `<p class="error">❌ Erreur : ${data.message || 'Requête invalide'}</p>`;
+            }
+        } catch (error) {
+            console.error("Erreur ajout:", error);
+            formMessageDiv.innerHTML = `<p class="error">❌ Erreur réseau. Vérifiez votre connexion ou l'API.</p>`;
+        } finally {
+            addBtn.disabled = false;
+        }
+    }
+
+    // --- Fonction pour modifier un utilisateur ---
+    function editUser(userId) {
+        const user = currentUsers.find(u => u.id === userId);
+        if (!user) return;
+
+        editingUserId = userId;
+        editName.value = user.name;
+        editEmail.value = user.email;
+        editBalance.value = user.balance;
+        editModal.style.display = 'block';
+    }
+
+    // --- Fonction pour sauvegarder la modification ---
+    async function saveEdit() {
+        if (!editingUserId) return;
+
+        const updatedUser = {
+            name: editName.value.trim(),
+            email: editEmail.value.trim(),
+            balance: parseFloat(editBalance.value) || 0
+        };
+
+        if (!updatedUser.name || !updatedUser.email) {
+            editMessageDiv.innerHTML = '<p class="error">❌ Le nom et l\'email sont obligatoires.</p>';
+            return;
+        }
+
+        editMessageDiv.innerHTML = '<p>⏳ Sauvegarde en cours...</p>';
+        saveEditBtn.disabled = true;
+
+        try {
+            const response = await fetch(`${USERS_URL}/${editingUserId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedUser)
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                editMessageDiv.innerHTML = `<p class="success">✅ ${data.message || 'Utilisateur modifié !'}</p>`;
+                closeModal();
+                loadUsers();
+                populateUserSelects();
+            } else {
+                editMessageDiv.innerHTML = `<p class="error">❌ Erreur : ${data.message || 'Modification échouée'}</p>`;
+            }
+        } catch (error) {
+            console.error("Erreur modification:", error);
+            editMessageDiv.innerHTML = `<p class="error">❌ Erreur réseau.</p>`;
+        } finally {
+            saveEditBtn.disabled = false;
+        }
+    }
+
+    // --- Fonction pour supprimer un utilisateur ---
+    async function deleteUser(userId) {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
+
+        try {
+            const response = await fetch(`${USERS_URL}/${userId}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert('✅ Utilisateur supprimé avec succès !');
+                loadUsers();
+                populateUserSelects();
+                populateHistorySelect();
+            } else {
+                alert(`❌ Erreur : ${data.message || 'Suppression échouée'}`);
+            }
+        } catch (error) {
+            console.error("Erreur suppression:", error);
+            alert('❌ Erreur réseau.');
+        }
+    }
+
+    // --- Fonctions pour les transactions ---
+    function populateUserSelects() {
+        const selects = [depositUser, withdrawUser, fromUser, toUser];
+        selects.forEach(select => {
+            select.innerHTML = '<option value="">Sélectionner un utilisateur</option>';
+            currentUsers.forEach(user => {
+                select.innerHTML += `<option value="${user.id}">${user.name} (${user.balance} €)</option>`;
+            });
+        });
+    }
+
+    async function performDeposit() {
+        const userId = depositUser.value;
+        const amount = parseFloat(depositAmount.value);
+
+        if (!userId || !amount || amount <= 0) {
+            transactionMessageDiv.innerHTML = '<p class="error">❌ Sélectionnez un utilisateur et un montant valide.</p>';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${USERS_URL}/${userId}/deposit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                transactionMessageDiv.innerHTML = `<p class="success">✅ Dépôt effectué avec succès ! Nouveau solde : ${data.user.balance} €</p>`;
+                depositAmount.value = '';
+                loadUsers();
+                populateUserSelects();
+            } else {
+                transactionMessageDiv.innerHTML = `<p class="error">❌ Erreur : ${data.message || 'Dépôt échoué'}</p>`;
+            }
+        } catch (error) {
+            console.error("Erreur dépôt:", error);
+            transactionMessageDiv.innerHTML = `<p class="error">❌ Erreur réseau.</p>`;
+        }
+    }
+
+    async function performWithdraw() {
+        const userId = withdrawUser.value;
+        const amount = parseFloat(withdrawAmount.value);
+
+        if (!userId || !amount || amount <= 0) {
+            transactionMessageDiv.innerHTML = '<p class="error">❌ Sélectionnez un utilisateur et un montant valide.</p>';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${USERS_URL}/${userId}/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                transactionMessageDiv.innerHTML = `<p class="success">✅ Retrait effectué avec succès ! Nouveau solde : ${data.user.balance} €</p>`;
+                withdrawAmount.value = '';
+                loadUsers();
+                populateUserSelects();
+            } else {
+                transactionMessageDiv.innerHTML = `<p class="error">❌ Erreur : ${data.message || 'Retrait échoué'}</p>`;
+            }
+        } catch (error) {
+            console.error("Erreur retrait:", error);
+            transactionMessageDiv.innerHTML = `<p class="error">❌ Erreur réseau.</p>`;
+        }
+    }
+
+    async function performTransfer() {
+        const fromId = fromUser.value;
+        const toId = toUser.value;
+        const amount = parseFloat(transferAmount.value);
+
+        if (!fromId || !toId || !amount || amount <= 0) {
+            transactionMessageDiv.innerHTML = '<p class="error">❌ Remplissez tous les champs correctement.</p>';
+            return;
+        }
+
+        if (fromId === toId) {
+            transactionMessageDiv.innerHTML = '<p class="error">❌ L\'expéditeur et le destinataire doivent être différents.</p>';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/transfers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fromUserId: fromId, toUserId: toId, amount })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                transactionMessageDiv.innerHTML = `<p class="success">✅ Virement effectué avec succès !</p>`;
+                transferAmount.value = '';
+                loadUsers();
+                populateUserSelects();
+            } else {
+                transactionMessageDiv.innerHTML = `<p class="error">❌ Erreur : ${data.message || 'Virement échoué'}</p>`;
+            }
+        } catch (error) {
+            console.error("Erreur virement:", error);
+            transactionMessageDiv.innerHTML = `<p class="error">❌ Erreur réseau.</p>`;
+        }
+    }
+
+    // --- Fonctions pour l'historique ---
+    function populateHistorySelect() {
+        historyUser.innerHTML = '<option value="">Sélectionner un utilisateur</option>';
+        currentUsers.forEach(user => {
+            historyUser.innerHTML += `<option value="${user.id}">${user.name}</option>`;
+        });
+    }
+
+    async function loadHistory() {
+        const userId = historyUser.value;
+        if (!userId) {
+            historyListDiv.innerHTML = '<p>Sélectionnez un utilisateur pour voir son historique.</p>';
+            return;
+        }
+
+        historyListDiv.innerHTML = '<p>⏳ Chargement de l\'historique...</p>';
+
+        try {
+            const response = await fetch(`${USERS_URL}/${userId}/history`);
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                if (data.history.length === 0) {
+                    historyListDiv.innerHTML = '<p>Aucune transaction pour cet utilisateur.</p>';
+                    return;
+                }
+
+                let html = `<h3>Historique de ${data.userName}</h3><div style="max-height: 400px; overflow-y: auto;">`;
+                data.history.forEach(transaction => {
+                    const date = new Date(transaction.date).toLocaleString('fr-FR');
+                    const typeLabel = {
+                        'deposit': '💰 Dépôt',
+                        'withdraw': '💸 Retrait',
+                        'transfer': '🔄 Virement'
+                    }[transaction.type] || transaction.type;
+
+                    html += `
+                        <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                            <strong>${typeLabel}</strong> - ${transaction.amount} €<br>
+                            <small>${date}</small>
+                            ${transaction.description ? `<br><small>${transaction.description}</small>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                historyListDiv.innerHTML = html;
+            } else {
+                historyListDiv.innerHTML = `<p class="error">❌ Erreur : ${data.message || 'Chargement échoué'}</p>`;
+            }
+        } catch (error) {
+            console.error("Erreur historique:", error);
+            historyListDiv.innerHTML = `<p class="error">❌ Erreur réseau.</p>`;
+        }
+    }
+
+    // --- Fonctions utilitaires ---
+    function closeModal() {
+        editModal.style.display = 'none';
+        editingUserId = null;
+        editMessageDiv.innerHTML = '';
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // --- Événements ---
+    addBtn.addEventListener('click', addUser);
+    refreshBtn.addEventListener('click', loadUsers);
+    saveEditBtn.addEventListener('click', saveEdit);
+    depositBtn.addEventListener('click', performDeposit);
+    withdrawBtn.addEventListener('click', performWithdraw);
+    transferBtn.addEventListener('click', performTransfer);
+    loadHistoryBtn.addEventListener('click', loadHistory);
+
+    // Fermer la modal en cliquant en dehors
+    window.onclick = function(event) {
+        if (event.target === editModal) {
+            closeModal();
+        }
+    };
+
+    // Chargement initial
+    loadUsers();
+</script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const userRoutes = require('./routes/userRoutes');
 
 // ===== SWAGGER : Importation des bibliothèques =====
@@ -11,6 +12,9 @@ const PORT = process.env.PORT || 3000;
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Servir les fichiers statiques à partir du dossier racine
+app.use(express.static(path.join(__dirname)));
 
 // ===== SWAGGER : Configuration =====
 const swaggerOptions = {
@@ -58,6 +62,45 @@ const swaggerOptions = {
                     },
                     required: ['id', 'name', 'email', 'balance', 'createdAt']
                 },
+                Transaction: {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID unique de la transaction'
+                        },
+                        fromUserId: {
+                            type: 'integer',
+                            nullable: true,
+                            description: 'ID de l\'utilisateur expéditeur'
+                        },
+                        toUserId: {
+                            type: 'integer',
+                            nullable: true,
+                            description: 'ID de l\'utilisateur destinataire'
+                        },
+                        amount: {
+                            type: 'number',
+                            format: 'float',
+                            description: 'Montant de la transaction'
+                        },
+                        type: {
+                            type: 'string',
+                            description: 'Type de transaction',
+                            example: 'deposit'
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Description de la transaction'
+                        },
+                        date: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Date de la transaction'
+                        }
+                    },
+                    required: ['id', 'amount', 'type', 'date']
+                },
                 Error: {
                     type: 'object',
                     properties: {
@@ -103,12 +146,16 @@ app.use('/api', userRoutes);
 
 // Route d'accueil
 app.get('/', (req, res) => {
-    // Utilise l'URL fournie par Render ou localhost en développement
-    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
     res.json({
         message: "API Bancaire - Bienvenue !",
-        documentation: `${baseUrl}/api-docs`
+        documentation: "http://localhost:3000/api-docs",
+        formulaire: "http://localhost:3000/formulaire.html"
     });
+});
+
+// Servir le fichier HTML statique
+app.get('/formulaire.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'formulaire.html'));
 });
 
 // Démarrage du serveur

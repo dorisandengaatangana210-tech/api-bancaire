@@ -40,24 +40,43 @@ class User {
     }
 
     static update(id, userData) {
+    const user = this.getById(id);
+    if (user) {
+        if (userData.name) user.name = userData.name;
+        if (userData.email) user.email = userData.email;
+        if (userData.balance !== undefined) user.balance = userData.balance;
+        return user;
+    }
+    return null;
+}
+
+static delete(id) {
+    const index = users.findIndex(user => user.id === parseInt(id));
+    if (index !== -1) {
+        const deletedUser = users.splice(index, 1)[0];
+        return deletedUser;
+    }
+    return null;
+}
+    static deposit(id, amount) {
         const user = this.getById(id);
-        if (user) {
-            if (userData.name) user.name = userData.name;
-            if (userData.email) user.email = userData.email;
-            if (userData.balance !== undefined) user.balance = userData.balance;
+        if (user && amount > 0) {
+            user.balance += amount;
             return user;
         }
         return null;
     }
 
-    static delete(id) {
-        const index = users.findIndex(user => user.id === parseInt(id));
-        if (index !== -1) {
-            const deletedUser = users.splice(index, 1)[0];
-            return deletedUser;
+    static withdraw(id, amount) {
+        const user = this.getById(id);
+        if (user && amount > 0 && user.balance >= amount) {
+            user.balance -= amount;
+            return user;
         }
         return null;
     }
 }
+
+
 
 module.exports = User;

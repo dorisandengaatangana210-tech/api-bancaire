@@ -62,7 +62,6 @@ const userController = require('../controllers/userController');
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Route pour ajouter un utilisateur (POST)
 router.post('/users', userController.addUser);
 
 /**
@@ -98,9 +97,197 @@ router.post('/users', userController.addUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Route pour obtenir tous les utilisateurs (GET)
 router.get('/users', userController.getAllUsers);
 
+// ==================== ROUTES SPÉCIFIQUES (avec paramètre fixe après l'ID) ====================
+/**
+ * @swagger
+ * /api/users/{id}/deposit:
+ *   post:
+ *     summary: Déposer de l'argent sur un compte utilisateur
+ *     description: Ajoute un montant au solde du compte utilisateur
+ *     tags: [Transactions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de l'utilisateur receveur
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *                 description: Montant à déposer
+ *                 example: 500.00
+ *             required:
+ *               - amount
+ *     responses:
+ *       200:
+ *         description: Dépôt effectué avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Dépôt effectué avec succès"
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 transaction:
+ *                   $ref: '#/components/schemas/Transaction'
+ *       400:
+ *         description: Montant invalide
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/users/:id/deposit', userController.deposit);
+
+/**
+ * @swagger
+ * /api/users/{id}/withdraw:
+ *   post:
+ *     summary: Retirer de l'argent d'un compte utilisateur
+ *     description: Retire un montant du solde du compte utilisateur
+ *     tags: [Transactions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de l'utilisateur débiteur
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *                 description: Montant à retirer
+ *                 example: 200.00
+ *             required:
+ *               - amount
+ *     responses:
+ *       200:
+ *         description: Retrait effectué avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Retrait effectué avec succès"
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 transaction:
+ *                   $ref: '#/components/schemas/Transaction'
+ *       400:
+ *         description: Montant invalide ou solde insuffisant
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/users/:id/withdraw', userController.withdraw);
+
+/**
+ * @swagger
+ * /api/users/{id}/history:
+ *   get:
+ *     summary: Historique des transactions d'un utilisateur
+ *     description: Récupère les transactions liées à un utilisateur
+ *     tags: [Transactions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de l'utilisateur
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Historique récupéré avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 userId:
+ *                   type: integer
+ *                   example: 1
+ *                 userName:
+ *                   type: string
+ *                   example: "Jean Dupont"
+ *                 history:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Transaction'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/users/:id/history', userController.getHistory);
+
+// ==================== ROUTES GÉNÉRIQUES (avec simple paramètre :id) ====================
 /**
  * @swagger
  * /api/users/{id}:
@@ -142,7 +329,6 @@ router.get('/users', userController.getAllUsers);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Route bonus : obtenir un utilisateur par ID (GET)
 router.get('/users/:id', userController.getUserById);
 
 /**
@@ -217,7 +403,6 @@ router.get('/users/:id', userController.getUserById);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Route pour modifier un utilisateur (PUT)
 router.put('/users/:id', userController.updateUser);
 
 /**
@@ -264,7 +449,75 @@ router.put('/users/:id', userController.updateUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Route pour supprimer un utilisateur (DELETE)
 router.delete('/users/:id', userController.deleteUser);
+
+// ==================== ROUTE POUR LES VIREMENTS ====================
+/**
+ * @swagger
+ * /api/transfers:
+ *   post:
+ *     summary: Effectuer un virement entre deux comptes
+ *     description: Transfère un montant d'un utilisateur à un autre
+ *     tags: [Transactions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fromUserId:
+ *                 type: integer
+ *                 description: ID de l'utilisateur expéditeur
+ *                 example: 1
+ *               toUserId:
+ *                 type: integer
+ *                 description: ID de l'utilisateur destinataire
+ *                 example: 2
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *                 description: Montant du virement
+ *                 example: 250.00
+ *             required:
+ *               - fromUserId
+ *               - toUserId
+ *               - amount
+ *     responses:
+ *       200:
+ *         description: Virement effectué avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Virement effectué avec succès"
+ *                 transaction:
+ *                   $ref: '#/components/schemas/Transaction'
+ *       400:
+ *         description: Données invalides ou solde insuffisant
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Utilisateur introuvable
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/transfers', userController.transfer);
 
 module.exports = router;

@@ -519,6 +519,6 @@ router.delete('/users/:id', userController.deleteUser);
  *               $ref: '#/components/schemas/Error'
  */
 router.post('/transfers', userController.transfer);
-router.post('/users/:id/assign-bank/:bankId', userController.assignBank);
+
 
 module.exports = router;

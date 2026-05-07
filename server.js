@@ -158,6 +158,9 @@ app.get('/formulaire.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'formulaire.html'));
 });
 
+const bankRoutes = require('./routes/bankRoutes');
+app.use('/api/banks', bankRoutes);
+
 // Démarrage du serveur
 app.listen(PORT, () => {
     console.log(`✅ Serveur démarré sur http://localhost:${PORT}`);

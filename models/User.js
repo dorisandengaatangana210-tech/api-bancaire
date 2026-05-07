@@ -3,14 +3,14 @@ let users = [];
 let currentId = 1;
 
 class User {
-    constructor(id, name, email, balance = 0) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.balance = balance;
-        this.createdAt = new Date();
-    }
-
+    constructor(id, name, email, balance = 0, bankId = null) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.balance = balance;
+    this.bankId = bankId;   // ← nouveau
+    this.createdAt = new Date();
+}
     static getAll() {
         return users;
     }
@@ -20,15 +20,16 @@ class User {
     }
 
     static create(userData) {
-        const newUser = new User(
-            currentId++,
-            userData.name,
-            userData.email,
-            userData.balance || 0
-        );
-        users.push(newUser);
-        return newUser;
-    }
+    const newUser = new User(currentId++, userData.name, userData.email, userData.balance || 0, userData.bankId || null);
+    users.push(newUser);
+    return newUser;
+}
+
+    static assignBank(userId, bankId) {
+    const user = this.getById(userId);
+    if (user) { user.bankId = parseInt(bankId); return user; }
+    return null;
+}
 
     static updateBalance(id, amount) {
         const user = this.getById(id);
@@ -39,16 +40,15 @@ class User {
         return null;
     }
 
-    static update(id, userData) {
+    static update(id, updates) {
     const user = this.getById(id);
-    if (user) {
-        if (userData.name) user.name = userData.name;
-        if (userData.email) user.email = userData.email;
-        if (userData.balance !== undefined) user.balance = userData.balance;
-        return user;
-    }
-    return null;
-}
+    if (!user) return null;
+    if (updates.name) user.name = updates.name;
+    if (updates.email) user.email = updates.email;
+    if (updates.balance !== undefined) user.balance = updates.balance;
+    if (updates.bankId !== undefined) user.bankId = updates.bankId;
+    return user;
+}  
 
 static delete(id) {
     const index = users.findIndex(user => user.id === parseInt(id));

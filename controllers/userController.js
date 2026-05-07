@@ -115,6 +115,13 @@ const deleteUser = (req, res) => {
     }
 };
 
+const assignBank = (req, res) => {
+    const { id, bankId } = req.params;
+    const user = User.assignBank(id, bankId);
+    if (!user) return res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
+    res.json({ success: true, user });
+};
+
 const deposit = (req, res) => {
     try {
         const { amount } = req.body;
@@ -225,6 +232,14 @@ const transfer = (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Utilisateur expéditeur ou destinataire non trouvé'
+            });
+        }
+
+        // === NOUVEAU : Vérification que les deux comptes appartiennent à la même banque ===
+        if (sender.bankId !== receiver.bankId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Virement uniquement entre comptes de la même banque'
             });
         }
 

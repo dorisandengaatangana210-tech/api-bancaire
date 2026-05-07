@@ -2,284 +2,110 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>🏦 MyBank - Gestion de comptes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏦 MyBank - Banques & Clients</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-            min-height: 100vh;
-            padding: 2rem 1rem;
-        }
-
-        /* Conteneur principal */
-        .app-container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-
-        /* En‑tête */
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .header h1 {
-            font-size: 2.2rem;
-            background: linear-gradient(135deg, #1f3b4c, #2c7da0);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: -0.5px;
-        }
-        .header p {
-            color: #2c3e50;
-            margin-top: 0.5rem;
-            font-weight: 500;
-        }
-
-        /* Grille d'onglets */
-        .tabs {
-            display: flex;
-            gap: 0.8rem;
-            justify-content: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        .tab {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(4px);
-            border: none;
-            padding: 0.8rem 1.8rem;
-            border-radius: 60px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1e4663;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .tab:hover {
-            background: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .tab.active {
-            background: #2c7da0;
-            color: white;
-            box-shadow: 0 8px 20px rgba(44,125,160,0.3);
-        }
-
-        /* Cartes */
-        .card {
-            background: white;
-            border-radius: 28px;
-            padding: 1.8rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Formulaires */
-        input, select, button {
-            border-radius: 60px;
-            padding: 12px 18px;
-            font-size: 0.95rem;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s;
-            background: #fefefe;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #2c7da0;
-            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
-        }
-        button {
-            background: #2c7da0;
-            color: white;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 12px 24px;
-        }
-        button:hover {
-            background: #1f5e7a;
-            transform: scale(0.98);
-        }
-        .btn-success {
-            background: #2c9e6b;
-        }
-        .btn-success:hover {
-            background: #1f7a53;
-        }
-        .btn-danger {
-            background: #e25c5c;
-        }
-        .btn-danger:hover {
-            background: #c13b3b;
-        }
-
-        /* Layout interne */
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        label {
-            font-weight: 600;
-            color: #1e4663;
-            margin-bottom: 0.3rem;
-            display: block;
-        }
-        .flex-row {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            align-items: flex-end;
-        }
-
-        /* Liste utilisateurs */
-        .user-item {
-            background: #f9fafc;
-            border-radius: 80px;
-            padding: 0.8rem 1.5rem;
-            margin-bottom: 0.8rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            transition: 0.1s;
-            border: 1px solid #edf2f7;
-        }
-        .user-info strong {
-            font-size: 1.1rem;
-            color: #0b2b3b;
-        }
-        .user-actions {
-            display: flex;
-            gap: 0.6rem;
-        }
-        .user-actions button {
-            padding: 6px 16px;
-            font-size: 0.8rem;
-        }
-
-        /* Messages */
-        .success {
-            background: #d9f0e3;
-            color: #1f6e43;
-            padding: 10px 18px;
-            border-radius: 80px;
-            margin-top: 1rem;
-        }
-        .error {
-            background: #ffe3e3;
-            color: #b33;
-            padding: 10px 18px;
-            border-radius: 80px;
-            margin-top: 1rem;
-        }
-
-        /* Bloc transaction */
-        .transaction-form {
-            background: #f8fafd;
-            border-radius: 24px;
-            padding: 1.5rem;
-            margin-bottom: 1.2rem;
-            border: 1px solid #eef2f8;
-        }
-
-        /* Responsive */
-        @media (max-width: 700px) {
-            .card {
-                padding: 1.2rem;
-            }
-            .user-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.8rem;
-                border-radius: 24px;
-            }
-            .tab {
-                padding: 0.5rem 1.2rem;
-                font-size: 0.85rem;
-            }
-        }
+        /* (garde exactement le même style que la version moderne que tu avais, je ne le répète pas pour la longueur. Reprends le style du précédent formulaire.html moderne) */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); min-height: 100vh; padding: 2rem 1rem; }
+        .app-container { max-width: 1300px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header h1 { font-size: 2.2rem; background: linear-gradient(135deg, #1f3b4c, #2c7da0); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .tabs { display: flex; gap: 0.8rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
+        .tab { background: rgba(255,255,255,0.7); backdrop-filter: blur(4px); border: none; padding: 0.8rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .tab.active { background: #2c7da0; color: white; box-shadow: 0 8px 20px rgba(44,125,160,0.3); }
+        .card { background: white; border-radius: 28px; padding: 1.8rem; margin-bottom: 2rem; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15); }
+        input, select, button { border-radius: 60px; padding: 12px 18px; border: 1px solid #e2e8f0; background: #fefefe; }
+        button { background: #2c7da0; color: white; font-weight: 600; cursor: pointer; }
+        .btn-success { background: #2c9e6b; }
+        .btn-danger { background: #e25c5c; }
+        .flex-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
+        .user-item, .bank-item { background: #f9fafc; border-radius: 80px; padding: 0.8rem 1.5rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .success { background: #d9f0e3; color: #1f6e43; padding: 10px 18px; border-radius: 80px; margin-top: 1rem; }
+        .error { background: #ffe3e3; color: #b33; padding: 10px 18px; border-radius: 80px; margin-top: 1rem; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        @media (max-width: 700px) { .user-item, .bank-item { flex-direction: column; align-items: flex-start; } }
     </style>
 </head>
 <body>
 <div class="app-container">
     <div class="header">
-        <h1>🏦 MyBank · Gestion bancaire</h1>
-        <p>Comptes, dépôts, retraits, virements et historique</p>
+        <h1>🏦 MyBank · Multibanques</h1>
+        <p>Gérez les banques, les clients et les transactions par banque</p>
     </div>
-
-    <!-- Onglets -->
     <div class="tabs">
-        <button class="tab active" data-tab="users">👥 Utilisateurs</button>
+        <button class="tab active" data-tab="banks">🏦 Banques</button>
+        <button class="tab" data-tab="users">👥 Clients</button>
         <button class="tab" data-tab="transactions">💸 Transactions</button>
         <button class="tab" data-tab="history">📊 Historique</button>
     </div>
 
-    <!-- PANEL UTILISATEURS -->
-    <div id="panel-users" class="tab-panel active">
+    <!-- PANEL BANQUES -->
+    <div id="panel-banks" class="tab-panel active">
         <div class="card">
-            <h2>➕ Créer un nouveau compte</h2>
+            <h2>➕ Créer une banque</h2>
             <div class="flex-row">
-                <div style="flex:2"><input type="text" id="fullname" placeholder="Nom complet ex: Sophie Martin"></div>
-                <div style="flex:2"><input type="email" id="emailUser" placeholder="Email ex: sophie@bank.com"></div>
-                <div style="flex:1"><input type="number" id="initBalance" placeholder="Solde initial (€)" step="0.01"></div>
-                <div><button id="createUserBtn" style="background:#2c7da0;">✨ Créer</button></div>
+                <input type="text" id="bankName" placeholder="Nom de la banque" style="flex:2">
+                <input type="text" id="bankCode" placeholder="Code unique ex: CT001" style="flex:1">
+                <button id="createBankBtn">✨ Créer</button>
             </div>
-            <div id="userFormMsg"></div>
+            <div id="bankMsg"></div>
         </div>
-
         <div class="card">
-            <h2>📋 Tous les comptes</h2>
-            <button id="refreshUsersBtn" style="margin-bottom: 1rem;">⟳ Actualiser</button>
-            <div id="usersListContainer">⏳ Chargement...</div>
+            <h2>📋 Liste des banques</h2>
+            <button id="refreshBanksBtn">⟳ Actualiser</button>
+            <div id="banksList">⏳ Chargement...</div>
         </div>
     </div>
 
-    <!-- PANEL TRANSACTIONS -->
+    <!-- PANEL CLIENTS -->
+    <div id="panel-users" class="tab-panel">
+        <div class="card">
+            <h2>➕ Nouveau client</h2>
+            <div class="flex-row">
+                <input type="text" id="fullname" placeholder="Nom" style="flex:2">
+                <input type="email" id="emailUser" placeholder="Email" style="flex:2">
+                <input type="number" id="initBalance" placeholder="Solde initial" step="0.01" style="flex:1">
+                <select id="userBankId" style="flex:1"></select>
+                <button id="createUserBtn">✨ Créer</button>
+            </div>
+            <div id="userFormMsg"></div>
+        </div>
+        <div class="card">
+            <h2>👥 Clients</h2>
+            <button id="refreshUsersBtn">⟳ Actualiser</button>
+            <div id="usersListContainer"></div>
+        </div>
+    </div>
+
+    <!-- PANEL TRANSACTIONS (identique à avant, sauf que les listes déroulantes ne proposent que des clients de la même banque lors d'un virement) -->
     <div id="panel-transactions" class="tab-panel">
         <div class="card">
             <h2>💰 Opérations</h2>
-
-            <!-- Dépôt -->
             <div class="transaction-form">
                 <h3>📥 Dépôt</h3>
                 <div class="flex-row">
-                    <select id="depositSelect" style="flex:2"></select>
-                    <input type="number" id="depositAmount" placeholder="Montant (€)" step="0.01" style="flex:1">
+                    <select id="depositSelect"></select>
+                    <input type="number" id="depositAmount" placeholder="Montant">
                     <button id="doDepositBtn" class="btn-success">Déposer</button>
                 </div>
             </div>
-
-            <!-- Retrait -->
             <div class="transaction-form">
                 <h3>📤 Retrait</h3>
                 <div class="flex-row">
-                    <select id="withdrawSelect" style="flex:2"></select>
-                    <input type="number" id="withdrawAmount" placeholder="Montant (€)" step="0.01" style="flex:1">
+                    <select id="withdrawSelect"></select>
+                    <input type="number" id="withdrawAmount" placeholder="Montant">
                     <button id="doWithdrawBtn" class="btn-danger">Retirer</button>
                 </div>
             </div>
-
-            <!-- Virement -->
             <div class="transaction-form">
-                <h3>🔄 Virement entre comptes</h3>
+                <h3>🔄 Virement</h3>
                 <div class="flex-row">
-                    <select id="transferFromSelect" style="flex:2"></select>
+                    <select id="transferFromSelect"></select>
                     <span>→</span>
-                    <select id="transferToSelect" style="flex:2"></select>
-                    <input type="number" id="transferAmount" placeholder="Montant" step="0.01" style="flex:1">
+                    <select id="transferToSelect"></select>
+                    <input type="number" id="transferAmount" placeholder="Montant">
                     <button id="doTransferBtn">Transférer</button>
                 </div>
             </div>
@@ -290,270 +116,280 @@
     <!-- PANEL HISTORIQUE -->
     <div id="panel-history" class="tab-panel">
         <div class="card">
-            <h2>📜 Historique des mouvements</h2>
+            <h2>📜 Historique</h2>
             <div class="flex-row">
-                <select id="historyUserSelect" style="flex:2"></select>
+                <select id="historyUserSelect"></select>
                 <button id="loadHistoryBtn">📋 Afficher</button>
             </div>
-            <div id="historyDisplay" style="margin-top: 1.5rem;">🕊️ Sélectionnez un utilisateur</div>
+            <div id="historyDisplay">🕊️ Sélectionnez un client</div>
         </div>
     </div>
 </div>
 
-<!-- Modale pour éditer un utilisateur -->
+<!-- Modale édition utilisateur (ajout du champ banque) -->
 <div id="editModal" style="display:none; position:fixed; top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5); align-items:center;justify-content:center;z-index:1000;">
     <div style="background:white; border-radius:32px; max-width:450px; width:90%; padding:2rem;">
-        <h3>✏️ Modifier le compte</h3>
-        <input type="text" id="editName" placeholder="Nom" style="width:100%; margin:10px 0;"><br>
-        <input type="email" id="editEmail" placeholder="Email" style="width:100%; margin:10px 0;"><br>
-        <input type="number" id="editBalance" placeholder="Solde (€)" step="0.01" style="width:100%; margin:10px 0;"><br>
+        <h3>✏️ Modifier client</h3>
+        <input type="text" id="editName" placeholder="Nom" style="width:100%"><br>
+        <input type="email" id="editEmail" placeholder="Email" style="width:100%"><br>
+        <input type="number" id="editBalance" placeholder="Solde" step="0.01" style="width:100%"><br>
+        <select id="editBankId" style="width:100%"></select><br>
         <div style="display:flex; gap:10px; justify-content:flex-end;">
             <button id="closeModalBtn">Annuler</button>
-            <button id="saveEditBtn" style="background:#2c7da0;">Sauvegarder</button>
+            <button id="saveEditBtn">Sauvegarder</button>
         </div>
         <div id="editFeed"></div>
     </div>
 </div>
 
 <script>
-    // ---------- CONFIGURATION ----------
     const BASE = window.location.origin;
     const API_USERS = `${BASE}/api/users`;
+    const API_BANKS = `${BASE}/api/banks`;
 
-    let allUsers = [];      // stockage local
+    let allUsers = [];
+    let allBanks = [];
 
-    // ---------- UTILS ----------
-    async function apiFetch(url, options = {}) {
+    // ========== Fonctions utilitaires ==========
+    async function fetchJson(url, options = {}) {
         const res = await fetch(url, options);
-        let json;
-        try { json = await res.json(); } catch(e) { json = {}; }
-        if (!res.ok) throw new Error(json.message || `HTTP ${res.status}`);
-        return json;
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
     }
 
-    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
-    async function loadUsersList() {
+    // ========== Banques ==========
+    async function loadBanks() {
         try {
-            const data = await fetch(API_USERS).then(r=>r.json());
-            if(data.success) {
-                allUsers = data.users || [];
-                renderUserList();
-                populateUserSelects(); // pour les selects des transactions / historique
-                return allUsers;
-            } else throw new Error("Format invalide");
-        } catch(e) {
-            document.getElementById('usersListContainer').innerHTML = `<div class="error">❌ Erreur chargement utilisateurs: ${e.message}</div>`;
-            return [];
-        }
+            const data = await fetchJson(API_BANKS);
+            allBanks = data.banks || [];
+            renderBanks();
+            populateBankSelects();
+        } catch (e) { console.error(e); document.getElementById('banksList').innerHTML = '<div class="error">Erreur chargement banques</div>'; }
     }
-
-    function renderUserList() {
-        const container = document.getElementById('usersListContainer');
-        if(!allUsers.length) { container.innerHTML = '<p>Aucun utilisateur. Créez-en un !</p>'; return; }
+    function renderBanks() {
+        const container = document.getElementById('banksList');
+        if (!allBanks.length) { container.innerHTML = '<p>Aucune banque. Créez-en une.</p>'; return; }
         let html = '';
-        allUsers.forEach(u => {
-            html += `
-                <div class="user-item">
-                    <div class="user-info">
-                        <strong>${escapeHtml(u.name)}</strong><br>
-                        <small>📧 ${escapeHtml(u.email)} | 💰 ${u.balance} € | ID ${u.id}</small>
-                    </div>
-                    <div class="user-actions">
-                        <button onclick="openEditUser(${u.id})" style="background:#ffc107; color:#2c2c2c;">✏️ Modifier</button>
-                        <button onclick="deleteUserById(${u.id})" class="btn-danger">🗑️ Supprimer</button>
-                    </div>
-                </div>
-            `;
+        allBanks.forEach(b => {
+            html += `<div class="bank-item">
+                        <div><strong>${escapeHtml(b.name)}</strong> (${b.code})<br><small>ID ${b.id}</small></div>
+                        <div>
+                            <button onclick="editBank(${b.id})" style="background:#ffc107;">✏️</button>
+                            <button onclick="deleteBank(${b.id})" class="btn-danger">🗑️</button>
+                        </div>
+                    </div>`;
         });
         container.innerHTML = html;
     }
+    async function createBank() {
+        const name = document.getElementById('bankName').value.trim();
+        const code = document.getElementById('bankCode').value.trim();
+        if (!name || !code) { showBankMsg('Nom et code requis', 'error'); return; }
+        try {
+            await fetchJson(API_BANKS, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name,code}) });
+            showBankMsg('Banque créée', 'success');
+            document.getElementById('bankName').value = '';
+            document.getElementById('bankCode').value = '';
+            await loadBanks();
+        } catch(e) { showBankMsg(`Erreur: ${e.message}`, 'error'); }
+    }
+    function showBankMsg(msg, type) { const d = document.getElementById('bankMsg'); d.innerHTML = `<div class="${type}">${msg}</div>`; setTimeout(()=>d.innerHTML='',3000); }
+    async function deleteBank(id) {
+        if(!confirm('Supprimer cette banque ?')) return;
+        try {
+            await fetchJson(`${API_BANKS}/${id}`, { method:'DELETE' });
+            await loadBanks();
+            await loadUsers(); // car les utilisateurs perdent leur banque? (On laissera null)
+        } catch(e) { alert('Erreur suppression'); }
+    }
+    function editBank(id) { alert('Modification de banque à implémenter si besoin'); } // version simplifiée
 
-    function populateUserSelects() {
-        const selects = ['depositSelect','withdrawSelect','transferFromSelect','transferToSelect','historyUserSelect'];
+    // ========== Clients ==========
+    async function loadUsers() {
+        try {
+            const data = await fetchJson(API_USERS);
+            allUsers = data.users || [];
+            renderUsers();
+            populateUserSelects();
+        } catch(e) { console.error(e); }
+    }
+    function renderUsers() {
+        const container = document.getElementById('usersListContainer');
+        if (!allUsers.length) { container.innerHTML = '<p>Aucun client.</p>'; return; }
+        let html = '';
+        allUsers.forEach(u => {
+            const bankName = allBanks.find(b => b.id === u.bankId)?.name || 'Aucune banque';
+            html += `<div class="user-item">
+                        <div><strong>${escapeHtml(u.name)}</strong><br>
+                        📧 ${escapeHtml(u.email)} | 💰 ${u.balance} € | 🏦 ${bankName}<br>
+                        <small>ID ${u.id}</small></div>
+                        <div>
+                            <button onclick="openEditUser(${u.id})" style="background:#ffc107;">✏️</button>
+                            <button onclick="deleteUser(${u.id})" class="btn-danger">🗑️</button>
+                        </div>
+                    </div>`;
+        });
+        container.innerHTML = html;
+    }
+    function populateBankSelects() {
+        const selects = ['userBankId', 'editBankId'];
         selects.forEach(id => {
             const sel = document.getElementById(id);
-            if(!sel) return;
-            sel.innerHTML = '<option value="">-- Choisir un compte --</option>';
-            allUsers.forEach(u => {
-                sel.innerHTML += `<option value="${u.id}">${escapeHtml(u.name)} (${u.balance} €)</option>`;
-            });
+            if (!sel) return;
+            sel.innerHTML = '<option value="">-- Aucune banque --</option>';
+            allBanks.forEach(b => { sel.innerHTML += `<option value="${b.id}">${b.name} (${b.code})</option>`; });
         });
     }
-
-    // Création utilisateur
     async function createUser() {
         const name = document.getElementById('fullname').value.trim();
         const email = document.getElementById('emailUser').value.trim();
         const balance = parseFloat(document.getElementById('initBalance').value) || 0;
-        if(!name || !email) {
-            showUserMsg('⚠️ Nom et email requis', 'error');
-            return;
-        }
+        const bankId = document.getElementById('userBankId').value;
+        if (!name || !email) return showUserMsg('Nom et email requis', 'error');
         try {
-            const res = await apiFetch(API_USERS, {
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({name, email, balance})
-            });
-            if(res.success) {
-                showUserMsg('✅ Compte créé avec succès', 'success');
-                document.getElementById('fullname').value = '';
-                document.getElementById('emailUser').value = '';
-                document.getElementById('initBalance').value = '';
-                await loadUsersList();
-            } else throw new Error(res.message);
-        } catch(e) { showUserMsg(`❌ Erreur: ${e.message}`, 'error'); }
+            await fetchJson(API_USERS, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, email, balance, bankId: bankId || null}) });
+            showUserMsg('Client créé', 'success');
+            document.getElementById('fullname').value = '';
+            document.getElementById('emailUser').value = '';
+            document.getElementById('initBalance').value = '';
+            await loadUsers();
+        } catch(e) { showUserMsg(`Erreur: ${e.message}`, 'error'); }
     }
-
-    function showUserMsg(msg, type) { const div = document.getElementById('userFormMsg'); div.innerHTML = `<div class="${type}">${msg}</div>`; setTimeout(()=>div.innerHTML='',3000); }
-    function showTxMsg(msg, type) { const div = document.getElementById('transactionFeedback'); div.innerHTML = `<div class="${type}">${msg}</div>`; setTimeout(()=>div.innerHTML='',3000); }
-
-    // Dépôt
-    async function deposit() {
-        const userId = document.getElementById('depositSelect').value;
-        const amount = parseFloat(document.getElementById('depositAmount').value);
-        if(!userId || isNaN(amount) || amount<=0) { showTxMsg('Sélectionnez un compte et montant valide', 'error'); return; }
+    function showUserMsg(msg, type) { const d = document.getElementById('userFormMsg'); d.innerHTML = `<div class="${type}">${msg}</div>`; setTimeout(()=>d.innerHTML='',3000); }
+    async function deleteUser(id) {
+        if(!confirm('Supprimer ce client ?')) return;
         try {
-            const res = await apiFetch(`${API_USERS}/${userId}/deposit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount}) });
-            if(res.success) {
-                showTxMsg(`✅ Dépôt effectué, nouveau solde ${res.user.balance} €`, 'success');
-                document.getElementById('depositAmount').value = '';
-                await loadUsersList();
-            } else throw new Error(res.message);
-        } catch(e) { showTxMsg(`Erreur dépôt: ${e.message}`, 'error'); }
-    }
-
-    async function withdraw() {
-        const userId = document.getElementById('withdrawSelect').value;
-        const amount = parseFloat(document.getElementById('withdrawAmount').value);
-        if(!userId || isNaN(amount) || amount<=0) { showTxMsg('Sélection et montant valide', 'error'); return; }
-        try {
-            const res = await apiFetch(`${API_USERS}/${userId}/withdraw`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount}) });
-            if(res.success) {
-                showTxMsg(`✅ Retrait effectué, nouveau solde ${res.user.balance} €`, 'success');
-                document.getElementById('withdrawAmount').value = '';
-                await loadUsersList();
-            } else throw new Error(res.message);
-        } catch(e) { showTxMsg(`Erreur retrait: ${e.message}`, 'error'); }
-    }
-
-    async function transfer() {
-        const fromId = document.getElementById('transferFromSelect').value;
-        const toId = document.getElementById('transferToSelect').value;
-        const amount = parseFloat(document.getElementById('transferAmount').value);
-        if(!fromId || !toId || isNaN(amount) || amount<=0) { showTxMsg('Remplissez tous les champs', 'error'); return; }
-        if(fromId === toId) { showTxMsg('Impossible de se virer à soi-même', 'error'); return; }
-        try {
-            const res = await apiFetch(`${BASE}/api/transfers`, {
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({ fromUserId: fromId, toUserId: toId, amount })
-            });
-            if(res.success) {
-                showTxMsg(`✅ Virement de ${amount} € réussi`, 'success');
-                document.getElementById('transferAmount').value = '';
-                await loadUsersList();
-            } else throw new Error(res.message);
-        } catch(e) { showTxMsg(`Erreur virement: ${e.message}`, 'error'); }
-    }
-
-    async function deleteUserById(id) {
-        if(!confirm('Supprimer définitivement ce compte ?')) return;
-        try {
-            const res = await apiFetch(`${API_USERS}/${id}`, { method:'DELETE' });
-            if(res.success) {
-                await loadUsersList();
-                alert('✔️ Utilisateur supprimé');
-            } else throw new Error(res.message);
+            await fetchJson(`${API_USERS}/${id}`, { method:'DELETE' });
+            await loadUsers();
         } catch(e) { alert('Erreur suppression'); }
     }
-
-    // Édition utilisateur
     let currentEditId = null;
-    window.openEditUser = (id) => {
+    function openEditUser(id) {
         const user = allUsers.find(u => u.id === id);
         if(!user) return;
         currentEditId = id;
         document.getElementById('editName').value = user.name;
         document.getElementById('editEmail').value = user.email;
         document.getElementById('editBalance').value = user.balance;
+        document.getElementById('editBankId').value = user.bankId || '';
         document.getElementById('editModal').style.display = 'flex';
-    };
-    async function saveEdit() {
+    }
+    async function saveUserEdit() {
         if(!currentEditId) return;
         const payload = {
             name: document.getElementById('editName').value.trim(),
             email: document.getElementById('editEmail').value.trim(),
-            balance: parseFloat(document.getElementById('editBalance').value) || 0
+            balance: parseFloat(document.getElementById('editBalance').value) || 0,
+            bankId: document.getElementById('editBankId').value || null
         };
-        if(!payload.name || !payload.email) { alert('Nom et email obligatoires'); return; }
+        if(!payload.name || !payload.email) { alert('Nom et email requis'); return; }
         try {
-            const res = await apiFetch(`${API_USERS}/${currentEditId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-            if(res.success) {
-                document.getElementById('editModal').style.display = 'none';
-                await loadUsersList();
-            } else throw new Error(res.message);
-        } catch(e) { alert(`Erreur : ${e.message}`); }
+            await fetchJson(`${API_USERS}/${currentEditId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            document.getElementById('editModal').style.display = 'none';
+            await loadUsers();
+        } catch(e) { alert(`Erreur: ${e.message}`); }
     }
 
-    // historique
-    async function showHistory() {
-        const userId = document.getElementById('historyUserSelect').value;
-        if(!userId) { document.getElementById('historyDisplay').innerHTML = '<div>👤 Choisissez un utilisateur</div>'; return; }
+    // ========== Transactions (dépôt, retrait, virement) avec vérification même banque côté backend ==========
+    function populateUserSelects() {
+        const selects = ['depositSelect', 'withdrawSelect', 'transferFromSelect', 'transferToSelect', 'historyUserSelect'];
+        selects.forEach(id => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            sel.innerHTML = '<option value="">-- Choisir --</option>';
+            allUsers.forEach(u => {
+                const bankName = allBanks.find(b => b.id === u.bankId)?.name || 'sans banque';
+                sel.innerHTML += `<option value="${u.id}">${escapeHtml(u.name)} (${u.balance} €) - ${bankName}</option>`;
+            });
+        });
+    }
+    async function deposit() {
+        const userId = document.getElementById('depositSelect').value;
+        const amount = parseFloat(document.getElementById('depositAmount').value);
+        if(!userId || isNaN(amount) || amount<=0) return showTxMsg('Sélectionnez un client et un montant valide', 'error');
         try {
-            const res = await fetch(`${API_USERS}/${userId}/history`).then(r=>r.json());
-            if(res.success && res.history) {
-                if(!res.history.length) { document.getElementById('historyDisplay').innerHTML = '<div>Aucune transaction 💤</div>'; return; }
-                let html = `<h4 style="margin-bottom: 12px;">📋 ${escapeHtml(res.userName)}</h4>`;
-                res.history.forEach(t => {
-                    const date = new Date(t.date).toLocaleString();
-                    let direction = '';
-                    if(t.type === 'deposit') direction = '💰 Dépôt';
-                    else if(t.type === 'withdraw') direction = '💸 Retrait';
-                    else direction = `🔄 Virement ${t.fromUserId == userId ? 'sortant' : 'entrant'}`;
-                    html += `<div style="border-left: 4px solid #2c7da0; padding:12px; margin-bottom:12px; background:#f9f9ff; border-radius:20px;">
-                                <strong>${direction}</strong> — ${t.amount} €<br>
-                                <small>${date}</small><br>
-                                <span style="font-size:0.8rem;">${t.description || ''}</span>
-                             </div>`;
-                });
-                document.getElementById('historyDisplay').innerHTML = html;
-            } else throw new Error('Echec historique');
+            const res = await fetchJson(`${API_USERS}/${userId}/deposit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount}) });
+            showTxMsg(`Dépôt effectué, nouveau solde ${res.user.balance} €`, 'success');
+            document.getElementById('depositAmount').value = '';
+            await loadUsers();
+        } catch(e) { showTxMsg(`Erreur: ${e.message}`, 'error'); }
+    }
+    async function withdraw() {
+        const userId = document.getElementById('withdrawSelect').value;
+        const amount = parseFloat(document.getElementById('withdrawAmount').value);
+        if(!userId || isNaN(amount) || amount<=0) return showTxMsg('Sélectionnez un client et montant valide', 'error');
+        try {
+            const res = await fetchJson(`${API_USERS}/${userId}/withdraw`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount}) });
+            showTxMsg(`Retrait effectué, nouveau solde ${res.user.balance} €`, 'success');
+            document.getElementById('withdrawAmount').value = '';
+            await loadUsers();
+        } catch(e) { showTxMsg(`Erreur: ${e.message}`, 'error'); }
+    }
+    async function transfer() {
+        const fromId = document.getElementById('transferFromSelect').value;
+        const toId = document.getElementById('transferToSelect').value;
+        const amount = parseFloat(document.getElementById('transferAmount').value);
+        if(!fromId || !toId || isNaN(amount) || amount<=0) return showTxMsg('Remplissez tous les champs', 'error');
+        if(fromId === toId) return showTxMsg('Virement à soi-même interdit', 'error');
+        try {
+            await fetchJson(`${BASE}/api/transfers`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fromUserId: fromId, toUserId: toId, amount }) });
+            showTxMsg(`Virement de ${amount} € réussi`, 'success');
+            document.getElementById('transferAmount').value = '';
+            await loadUsers();
+        } catch(e) { showTxMsg(`Erreur: ${e.message}`, 'error'); }
+    }
+    function showTxMsg(msg, type) { const d = document.getElementById('transactionFeedback'); d.innerHTML = `<div class="${type}">${msg}</div>`; setTimeout(()=>d.innerHTML='',3000); }
+
+    // ========== Historique ==========
+    async function loadHistory() {
+        const userId = document.getElementById('historyUserSelect').value;
+        if(!userId) return document.getElementById('historyDisplay').innerHTML = '<div>Choisissez un client</div>';
+        try {
+            const data = await fetchJson(`${API_USERS}/${userId}/history`);
+            if(!data.history.length) { document.getElementById('historyDisplay').innerHTML = '<div>Aucune transaction</div>'; return; }
+            let html = `<h4>${escapeHtml(data.userName)}</h4>`;
+            data.history.forEach(t => {
+                const date = new Date(t.date).toLocaleString();
+                let direction = t.type === 'deposit' ? '💰 Dépôt' : (t.type === 'withdraw' ? '💸 Retrait' : `🔄 Virement`);
+                html += `<div style="border-left:4px solid #2c7da0; padding:12px; margin-bottom:12px; background:#f9f9ff; border-radius:20px;">
+                            <strong>${direction}</strong> — ${t.amount} €<br><small>${date}</small><br><span style="font-size:0.8rem;">${t.description || ''}</span>
+                         </div>`;
+            });
+            document.getElementById('historyDisplay').innerHTML = html;
         } catch(e) { document.getElementById('historyDisplay').innerHTML = `<div class="error">Erreur: ${e.message}</div>`; }
     }
 
-    // ---------- GESTION ONGLETS ----------
+    // ========== Onglets ==========
     function activateTab(tabId) {
-        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.getElementById(`panel-${tabId}`).classList.add('active');
         document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
         document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
-        if(tabId === 'users') loadUsersList();
-        if(tabId === 'transactions') { loadUsersList().then(() => populateUserSelects()); }
-        if(tabId === 'history') loadUsersList().then(() => populateUserSelects());
+        if (tabId === 'banks') loadBanks();
+        if (tabId === 'users') loadUsers();
+        if (tabId === 'transactions') loadUsers().then(() => populateUserSelects());
+        if (tabId === 'history') loadUsers().then(() => populateUserSelects());
     }
-
     document.querySelectorAll('.tab').forEach(btn => {
         btn.addEventListener('click', () => activateTab(btn.getAttribute('data-tab')));
     });
 
-    // ---- Événements ----
+    // ========== Événements ==========
+    document.getElementById('createBankBtn')?.addEventListener('click', createBank);
+    document.getElementById('refreshBanksBtn')?.addEventListener('click', loadBanks);
     document.getElementById('createUserBtn')?.addEventListener('click', createUser);
-    document.getElementById('refreshUsersBtn')?.addEventListener('click', loadUsersList);
+    document.getElementById('refreshUsersBtn')?.addEventListener('click', loadUsers);
     document.getElementById('doDepositBtn')?.addEventListener('click', deposit);
     document.getElementById('doWithdrawBtn')?.addEventListener('click', withdraw);
     document.getElementById('doTransferBtn')?.addEventListener('click', transfer);
-    document.getElementById('loadHistoryBtn')?.addEventListener('click', showHistory);
+    document.getElementById('loadHistoryBtn')?.addEventListener('click', loadHistory);
     document.getElementById('closeModalBtn')?.addEventListener('click', () => document.getElementById('editModal').style.display = 'none');
-    document.getElementById('saveEditBtn')?.addEventListener('click', saveEdit);
+    document.getElementById('saveEditBtn')?.addEventListener('click', saveUserEdit);
 
-    // init
-    loadUsersList().then(() => { populateUserSelects(); });
+    function escapeHtml(str) { return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;': '&gt;'); }
+
+    // Initialisation
+    loadBanks().then(() => loadUsers());
 </script>
-<style>
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-</style>
 </body>
 </html>

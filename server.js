@@ -87,10 +87,13 @@ app.use('/api/banks', bankRoutes);  // Routes des banques
 
 // Route d'accueil (JSON)
 app.get('/', (req, res) => {
+    // Récupère dynamiquement l'URL du serveur (Render ou local)
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    
     res.json({
         message: "API Bancaire - Bienvenue !",
-        documentation: "http://localhost:3000/api-docs",
-        formulaire: "http://localhost:3000/formulaire.html"
+        documentation: `${baseUrl}/api-docs`,
+        formulaire: `${baseUrl}/formulaire.html`
     });
 });
 

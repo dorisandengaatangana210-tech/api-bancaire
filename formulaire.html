@@ -2,24 +2,23 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏦 MyBank - Banques & Clients</title>
+    <title>MyBank - Gestion rigoureuse</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', 'Inter', sans-serif; }
         body { background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); min-height: 100vh; padding: 2rem 1rem; }
         .app-container { max-width: 1300px; margin: 0 auto; }
         .header { text-align: center; margin-bottom: 2rem; }
-        .header h1 { font-size: 2.2rem; background: linear-gradient(135deg, #1f3b4c, #2c7da0); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .header h1 { font-size: 2rem; color: #1f3b4c; }
         .tabs { display: flex; gap: 0.8rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
-        .tab { background: rgba(255,255,255,0.7); backdrop-filter: blur(4px); border: none; padding: 0.8rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .tab.active { background: #2c7da0; color: white; box-shadow: 0 8px 20px rgba(44,125,160,0.3); }
-        .card { background: white; border-radius: 28px; padding: 1.8rem; margin-bottom: 2rem; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15); }
+        .tab { background: rgba(255,255,255,0.7); border: none; padding: 0.8rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; }
+        .tab.active { background: #2c7da0; color: white; }
+        .card { background: white; border-radius: 28px; padding: 1.8rem; margin-bottom: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         input, select, button { border-radius: 60px; padding: 12px 18px; border: 1px solid #e2e8f0; background: #fefefe; }
-        button { background: #2c7da0; color: white; font-weight: 600; cursor: pointer; }
+        button { background: #2c7da0; color: white; font-weight: 600; cursor: pointer; border: none; }
         .btn-success { background: #2c9e6b; }
         .btn-danger { background: #e25c5c; }
         .flex-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
-        .user-item, .bank-item { background: #f9fafc; border-radius: 80px; padding: 0.8rem 1.5rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .user-item, .bank-item { background: #f9fafc; border-radius: 20px; padding: 0.8rem 1.5rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
         .success { background: #d9f0e3; color: #1f6e43; padding: 10px 18px; border-radius: 80px; margin-top: 1rem; }
         .error { background: #ffe3e3; color: #b33; padding: 10px 18px; border-radius: 80px; margin-top: 1rem; }
         .tab-panel { display: none; }
@@ -30,83 +29,83 @@
 <body>
 <div class="app-container">
     <div class="header">
-        <h1>🏦 MyBank · Multibanques</h1>
-        <p>Gérez les banques, les clients et les transactions par banque</p>
+        <h1>MyBank · Application bancaire rigoureuse</h1>
+        <p>Gestion des banques, clients, transactions (FCFA)</p>
     </div>
     <div class="tabs">
-        <button class="tab active" data-tab="banks">🏦 Banques</button>
-        <button class="tab" data-tab="users">👥 Clients</button>
-        <button class="tab" data-tab="transactions">💸 Transactions</button>
-        <button class="tab" data-tab="history">📊 Historique</button>
+        <button class="tab active" data-tab="banks">Banques</button>
+        <button class="tab" data-tab="users">Clients</button>
+        <button class="tab" data-tab="transactions">Transactions</button>
+        <button class="tab" data-tab="history">Historique</button>
     </div>
 
-    <!-- PANEL BANQUES -->
+    <!-- Banques -->
     <div id="panel-banks" class="tab-panel active">
         <div class="card">
-            <h2>➕ Créer une banque</h2>
+            <h2>Creer une banque</h2>
             <div class="flex-row">
                 <input type="text" id="bankName" placeholder="Nom de la banque" style="flex:2">
-                <input type="text" id="bankCode" placeholder="Code unique ex: CT001" style="flex:1">
-                <button id="createBankBtn">✨ Créer</button>
+                <input type="text" id="bankCode" placeholder="Code unique (ex: CT001)" style="flex:1">
+                <button id="createBankBtn">Creer</button>
             </div>
             <div id="bankMsg"></div>
         </div>
         <div class="card">
-            <h2>📋 Liste des banques</h2>
-            <button id="refreshBanksBtn">⟳ Actualiser</button>
-            <div id="banksList">⏳ Chargement...</div>
+            <h2>Liste des banques</h2>
+            <button id="refreshBanksBtn">Actualiser</button>
+            <div id="banksList">Chargement...</div>
         </div>
     </div>
 
-    <!-- PANEL CLIENTS -->
+    <!-- Clients -->
     <div id="panel-users" class="tab-panel">
         <div class="card">
-            <h2>➕ Nouveau client</h2>
+            <h2>Nouveau client</h2>
             <div class="flex-row">
                 <input type="text" id="fullname" placeholder="Nom complet" style="flex:2">
-                <input type="email" id="emailUser" placeholder="Email" style="flex:2">
-                <input type="number" id="initBalance" placeholder="Solde initial (€)" step="0.01" style="flex:1">
+                <input type="email" id="emailUser" placeholder="Email (ex: nom@domaine.com)" style="flex:2">
+                <input type="number" id="initBalance" placeholder="Solde initial (FCFA)" step="1" min="0" style="flex:1">
                 <select id="userBankId" style="flex:1">
                     <option value="">-- Choisir une banque --</option>
                 </select>
-                <button id="createUserBtn">✨ Créer</button>
+                <button id="createUserBtn">Creer</button>
             </div>
             <div id="userFormMsg"></div>
         </div>
         <div class="card">
-            <h2>👥 Clients</h2>
-            <button id="refreshUsersBtn">⟳ Actualiser</button>
+            <h2>Clients</h2>
+            <button id="refreshUsersBtn">Actualiser</button>
             <div id="usersListContainer"></div>
         </div>
     </div>
 
-    <!-- PANEL TRANSACTIONS -->
+    <!-- Transactions -->
     <div id="panel-transactions" class="tab-panel">
         <div class="card">
-            <h2>💰 Opérations</h2>
+            <h2>Operations</h2>
             <div class="transaction-form">
-                <h3>📥 Dépôt</h3>
+                <h3>Depot</h3>
                 <div class="flex-row">
                     <select id="depositSelect"></select>
-                    <input type="number" id="depositAmount" placeholder="Montant (€)" step="0.01">
-                    <button id="doDepositBtn" class="btn-success">Déposer</button>
+                    <input type="number" id="depositAmount" placeholder="Montant (FCFA)" step="1" min="1">
+                    <button id="doDepositBtn" class="btn-success">Deposer</button>
                 </div>
             </div>
             <div class="transaction-form">
-                <h3>📤 Retrait</h3>
+                <h3>Retrait</h3>
                 <div class="flex-row">
                     <select id="withdrawSelect"></select>
-                    <input type="number" id="withdrawAmount" placeholder="Montant (€)" step="0.01">
+                    <input type="number" id="withdrawAmount" placeholder="Montant (FCFA)" step="1" min="1">
                     <button id="doWithdrawBtn" class="btn-danger">Retirer</button>
                 </div>
             </div>
             <div class="transaction-form">
-                <h3>🔄 Virement</h3>
+                <h3>Virement</h3>
                 <div class="flex-row">
                     <select id="transferFromSelect"></select>
-                    <span>→</span>
+                    <span>vers</span>
                     <select id="transferToSelect"></select>
-                    <input type="number" id="transferAmount" placeholder="Montant (€)" step="0.01">
+                    <input type="number" id="transferAmount" placeholder="Montant (FCFA)" step="1" min="1">
                     <button id="doTransferBtn">Transférer</button>
                 </div>
             </div>
@@ -114,26 +113,26 @@
         </div>
     </div>
 
-    <!-- PANEL HISTORIQUE -->
+    <!-- Historique -->
     <div id="panel-history" class="tab-panel">
         <div class="card">
-            <h2>📜 Historique</h2>
+            <h2>Historique des transactions</h2>
             <div class="flex-row">
                 <select id="historyUserSelect"></select>
-                <button id="loadHistoryBtn">📋 Afficher</button>
+                <button id="loadHistoryBtn">Afficher</button>
             </div>
-            <div id="historyDisplay">🕊️ Sélectionnez un client</div>
+            <div id="historyDisplay">Selectionnez un client</div>
         </div>
     </div>
 </div>
 
-<!-- Modale d'édition -->
+<!-- Modale edition -->
 <div id="editModal" style="display:none; position:fixed; top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5); align-items:center;justify-content:center;z-index:1000;">
     <div style="background:white; border-radius:32px; max-width:450px; width:90%; padding:2rem;">
-        <h3>✏️ Modifier client</h3>
+        <h3>Modifier client</h3>
         <input type="text" id="editName" placeholder="Nom" style="width:100%; margin:8px 0;">
         <input type="email" id="editEmail" placeholder="Email" style="width:100%; margin:8px 0;">
-        <input type="number" id="editBalance" placeholder="Solde (€)" step="0.01" style="width:100%; margin:8px 0;">
+        <input type="number" id="editBalance" placeholder="Solde (FCFA)" step="1" min="0" style="width:100%; margin:8px 0;">
         <select id="editBankId" style="width:100%; margin:8px 0;"></select>
         <div style="display:flex; gap:10px; justify-content:flex-end;">
             <button id="closeModalBtn">Annuler</button>
@@ -150,14 +149,18 @@
 
     let allUsers = [];
     let allBanks = [];
+    let currentEditId = null;
 
     async function fetchJson(url, options = {}) {
         const res = await fetch(url, options);
-        if (!res.ok) throw new Error((await res.text()) || `HTTP ${res.status}`);
+        if (!res.ok) {
+            let errorText = await res.text();
+            throw new Error(errorText || `HTTP ${res.status}`);
+        }
         return res.json();
     }
 
-    // === Banques ===
+    // --- Banques ---
     async function loadBanks() {
         try {
             const data = await fetchJson(API_BANKS);
@@ -169,21 +172,23 @@
             document.getElementById('banksList').innerHTML = '<div class="error">Erreur chargement banques</div>';
         }
     }
+
     function renderBanks() {
         const container = document.getElementById('banksList');
-        if (!allBanks.length) { container.innerHTML = '<p>Aucune banque. Créez-en une.</p>'; return; }
+        if (!allBanks.length) { container.innerHTML = '<p>Aucune banque. Creez-en une.</p>'; return; }
         let html = '';
         allBanks.forEach(b => {
             html += `<div class="bank-item">
                         <div><strong>${escapeHtml(b.name)}</strong> (${b.code}) - ID ${b.id}</div>
                         <div>
-                            <button onclick="editBank(${b.id})" style="background:#ffc107;">✏️</button>
-                            <button onclick="deleteBank(${b.id})" class="btn-danger">🗑️</button>
+                            <button onclick="editBankPrompt(${b.id})" style="background:#ffc107;">Modifier</button>
+                            <button onclick="deleteBank(${b.id})" class="btn-danger">Supprimer</button>
                         </div>
                     </div>`;
         });
         container.innerHTML = html;
     }
+
     function populateBankSelects() {
         const selects = ['userBankId', 'editBankId'];
         selects.forEach(id => {
@@ -195,34 +200,48 @@
             });
         });
     }
+
     async function createBank() {
         const name = document.getElementById('bankName').value.trim();
         const code = document.getElementById('bankCode').value.trim();
         if (!name || !code) return showBankMsg('Nom et code requis', 'error');
         try {
             await fetchJson(API_BANKS, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name,code}) });
-            showBankMsg('Banque créée', 'success');
+            showBankMsg('Banque creee', 'success');
             document.getElementById('bankName').value = '';
             document.getElementById('bankCode').value = '';
             await loadBanks();
         } catch(e) { showBankMsg(`Erreur: ${e.message}`, 'error'); }
     }
+
     function showBankMsg(msg, type) {
         const div = document.getElementById('bankMsg');
         div.innerHTML = `<div class="${type}">${msg}</div>`;
         setTimeout(() => div.innerHTML = '', 3000);
     }
+
     async function deleteBank(id) {
         if (!confirm('Supprimer cette banque ?')) return;
         try {
             await fetchJson(`${API_BANKS}/${id}`, { method:'DELETE' });
             await loadBanks();
-            await loadUsers();
+            await loadUsers(); // car les utilisateurs perdent leur banque (affichage)
         } catch(e) { alert('Erreur suppression'); }
     }
-    function editBank(id) { alert('Fonctionnalité d’édition de banque à implémenter'); }
 
-    // === Clients ===
+    function editBankPrompt(id) {
+        const bank = allBanks.find(b => b.id === id);
+        if (!bank) return;
+        const newName = prompt("Nouveau nom :", bank.name);
+        const newCode = prompt("Nouveau code :", bank.code);
+        if (newName && newCode) {
+            fetchJson(`${API_BANKS}/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name:newName, code:newCode}) })
+                .then(() => loadBanks())
+                .catch(e => alert("Erreur modification"));
+        }
+    }
+
+    // --- Clients ---
     async function loadUsers() {
         try {
             const data = await fetchJson(API_USERS);
@@ -231,44 +250,69 @@
             populateUserSelects();
         } catch(e) { console.error(e); }
     }
+
     function renderUsers() {
         const container = document.getElementById('usersListContainer');
         if (!allUsers.length) { container.innerHTML = '<p>Aucun client.</p>'; return; }
         let html = '';
         allUsers.forEach(u => {
-            const bankName = allBanks.find(b => b.id === u.bankId)?.name || 'Aucune banque';
+            // Trouver le nom de la banque (même si allBanks n'est pas encore chargé, on utilise une recherche sécurisée)
+            const bankObj = allBanks.find(b => b.id === u.bankId);
+            const bankName = bankObj ? bankObj.name : 'Aucune banque';
+            // Formatage du solde en FCFA (séparateur de milliers)
+            const soldeFormate = new Intl.NumberFormat('fr-FR').format(u.balance);
             html += `<div class="user-item">
                         <div><strong>${escapeHtml(u.name)}</strong><br>
-                        📧 ${escapeHtml(u.email)} | 💰 ${u.balance} € | 🏦 ${bankName}<br>
-                        <small>ID ${u.id}</small></div>
+                        Email: ${escapeHtml(u.email)} | Solde: ${soldeFormate} FCFA | Banque: ${bankName}<br>
+                        ID: ${u.id}</div>
                         <div>
-                            <button onclick="openEditUser(${u.id})" style="background:#ffc107;">✏️</button>
-                            <button onclick="deleteUser(${u.id})" class="btn-danger">🗑️</button>
+                            <button onclick="openEditUser(${u.id})" style="background:#ffc107;">Modifier</button>
+                            <button onclick="deleteUser(${u.id})" class="btn-danger">Supprimer</button>
                         </div>
                     </div>`;
         });
         container.innerHTML = html;
     }
+
+    function validateEmail(email) {
+        const re = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+        return re.test(email);
+    }
+
     async function createUser() {
         const name = document.getElementById('fullname').value.trim();
         const email = document.getElementById('emailUser').value.trim();
-        const balance = parseFloat(document.getElementById('initBalance').value) || 0;
+        const balance = parseInt(document.getElementById('initBalance').value, 10);
         const bankId = document.getElementById('userBankId').value;
-        if (!name || !email) return showUserMsg('Nom et email requis', 'error');
+
+        if (!name) return showUserMsg('Nom requis', 'error');
+        if (!email) return showUserMsg('Email requis', 'error');
+        if (!validateEmail(email)) return showUserMsg('Email invalide (doit contenir @ et un domaine)', 'error');
+        if (isNaN(balance) || balance < 0) return showUserMsg('Solde initial (FCFA) doit être un nombre positif ou nul', 'error');
+
         try {
-            await fetchJson(API_USERS, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, email, balance, bankId: bankId || null}) });
-            showUserMsg('Client créé avec succès', 'success');
+            await fetchJson(API_USERS, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({name, email, balance, bankId: bankId || null})
+            });
+            showUserMsg('Client cree avec succes', 'success');
             document.getElementById('fullname').value = '';
             document.getElementById('emailUser').value = '';
             document.getElementById('initBalance').value = '';
+            // Ne pas réinitialiser la sélection de banque
             await loadUsers();
-        } catch(e) { showUserMsg(`Erreur: ${e.message}`, 'error'); }
+        } catch(e) {
+            showUserMsg(`Erreur: ${e.message}`, 'error');
+        }
     }
+
     function showUserMsg(msg, type) {
         const div = document.getElementById('userFormMsg');
         div.innerHTML = `<div class="${type}">${msg}</div>`;
-        setTimeout(() => div.innerHTML = '', 3000);
+        setTimeout(() => div.innerHTML = '', 4000);
     }
+
     async function deleteUser(id) {
         if (!confirm('Supprimer ce client ?')) return;
         try {
@@ -276,7 +320,7 @@
             await loadUsers();
         } catch(e) { alert('Erreur suppression'); }
     }
-    let currentEditId = null;
+
     function openEditUser(id) {
         const user = allUsers.find(u => u.id === id);
         if (!user) return;
@@ -287,23 +331,30 @@
         document.getElementById('editBankId').value = user.bankId || '';
         document.getElementById('editModal').style.display = 'flex';
     }
+
     async function saveUserEdit() {
         if (!currentEditId) return;
-        const payload = {
-            name: document.getElementById('editName').value.trim(),
-            email: document.getElementById('editEmail').value.trim(),
-            balance: parseFloat(document.getElementById('editBalance').value) || 0,
-            bankId: document.getElementById('editBankId').value || null
-        };
-        if (!payload.name || !payload.email) { alert('Nom et email requis'); return; }
+        const name = document.getElementById('editName').value.trim();
+        const email = document.getElementById('editEmail').value.trim();
+        const balance = parseInt(document.getElementById('editBalance').value, 10);
+        const bankId = document.getElementById('editBankId').value;
+
+        if (!name || !email) { alert('Nom et email requis'); return; }
+        if (!validateEmail(email)) { alert('Email invalide'); return; }
+        if (isNaN(balance) || balance < 0) { alert('Solde invalide'); return; }
+
         try {
-            await fetchJson(`${API_USERS}/${currentEditId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            await fetchJson(`${API_USERS}/${currentEditId}`, {
+                method:'PUT',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({name, email, balance, bankId: bankId || null})
+            });
             document.getElementById('editModal').style.display = 'none';
             await loadUsers();
         } catch(e) { alert(`Erreur: ${e.message}`); }
     }
 
-    // === Transactions ===
+    // --- Transactions ---
     function populateUserSelects() {
         const selects = ['depositSelect', 'withdrawSelect', 'transferFromSelect', 'transferToSelect', 'historyUserSelect'];
         selects.forEach(id => {
@@ -312,52 +363,71 @@
             sel.innerHTML = '<option value="">-- Choisir --</option>';
             allUsers.forEach(u => {
                 const bankName = allBanks.find(b => b.id === u.bankId)?.name || 'sans banque';
-                sel.innerHTML += `<option value="${u.id}">${escapeHtml(u.name)} (${u.balance} €) - ${bankName}</option>`;
+                sel.innerHTML += `<option value="${u.id}">${escapeHtml(u.name)} (${u.balance} FCFA) - ${bankName}</option>`;
             });
         });
     }
+
     async function deposit() {
         const userId = document.getElementById('depositSelect').value;
-        const amount = parseFloat(document.getElementById('depositAmount').value);
-        if (!userId || isNaN(amount) || amount <= 0) return showTxMsg('Client et montant valide requis', 'error');
+        const amount = parseInt(document.getElementById('depositAmount').value, 10);
+        if (!userId) return showTxMsg('Selectionnez un client', 'error');
+        if (isNaN(amount) || amount <= 0) return showTxMsg('Montant invalide (minimum 1 FCFA)', 'error');
         try {
-            const res = await fetchJson(`${API_USERS}/${userId}/deposit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount}) });
-            showTxMsg(`Dépôt de ${amount} € effectué. Nouveau solde : ${res.user.balance} €`, 'success');
+            const res = await fetchJson(`${API_USERS}/${userId}/deposit`, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({amount})
+            });
+            showTxMsg(`Depot de ${amount} FCFA effectue. Nouveau solde : ${res.user.balance} FCFA`, 'success');
             document.getElementById('depositAmount').value = '';
             await loadUsers();
         } catch(e) { showTxMsg(`Erreur: ${e.message}`, 'error'); }
     }
+
     async function withdraw() {
         const userId = document.getElementById('withdrawSelect').value;
-        const amount = parseFloat(document.getElementById('withdrawAmount').value);
-        if (!userId || isNaN(amount) || amount <= 0) return showTxMsg('Client et montant valide requis', 'error');
+        const amount = parseInt(document.getElementById('withdrawAmount').value, 10);
+        if (!userId) return showTxMsg('Selectionnez un client', 'error');
+        if (isNaN(amount) || amount <= 0) return showTxMsg('Montant invalide', 'error');
         try {
-            const res = await fetchJson(`${API_USERS}/${userId}/withdraw`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount}) });
-            showTxMsg(`Retrait de ${amount} € effectué. Nouveau solde : ${res.user.balance} €`, 'success');
+            const res = await fetchJson(`${API_USERS}/${userId}/withdraw`, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({amount})
+            });
+            showTxMsg(`Retrait de ${amount} FCFA effectue. Nouveau solde : ${res.user.balance} FCFA`, 'success');
             document.getElementById('withdrawAmount').value = '';
             await loadUsers();
         } catch(e) { showTxMsg(`Erreur: ${e.message}`, 'error'); }
     }
+
     async function transfer() {
         const fromId = document.getElementById('transferFromSelect').value;
         const toId = document.getElementById('transferToSelect').value;
-        const amount = parseFloat(document.getElementById('transferAmount').value);
-        if (!fromId || !toId || isNaN(amount) || amount <= 0) return showTxMsg('Veuillez remplir tous les champs', 'error');
-        if (fromId === toId) return showTxMsg('Virement à soi‑même interdit', 'error');
+        const amount = parseInt(document.getElementById('transferAmount').value, 10);
+        if (!fromId || !toId) return showTxMsg('Selectionnez un expediteur et un destinataire', 'error');
+        if (fromId === toId) return showTxMsg('Virement a soi-meme interdit', 'error');
+        if (isNaN(amount) || amount <= 0) return showTxMsg('Montant invalide', 'error');
         try {
-            await fetchJson(`${BASE}/api/transfers`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fromUserId: fromId, toUserId: toId, amount }) });
-            showTxMsg(`Virement de ${amount} € réussi`, 'success');
+            await fetchJson(`${BASE}/api/transfers`, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ fromUserId: fromId, toUserId: toId, amount })
+            });
+            showTxMsg(`Virement de ${amount} FCFA reussi`, 'success');
             document.getElementById('transferAmount').value = '';
             await loadUsers();
         } catch(e) { showTxMsg(`Erreur: ${e.message}`, 'error'); }
     }
+
     function showTxMsg(msg, type) {
         const div = document.getElementById('transactionFeedback');
         div.innerHTML = `<div class="${type}">${msg}</div>`;
-        setTimeout(() => div.innerHTML = '', 3000);
+        setTimeout(() => div.innerHTML = '', 4000);
     }
 
-    // === Historique ===
+    // --- Historique ---
     async function loadHistory() {
         const userId = document.getElementById('historyUserSelect').value;
         if (!userId) { document.getElementById('historyDisplay').innerHTML = '<div>Choisissez un client</div>'; return; }
@@ -366,10 +436,10 @@
             if (!data.history.length) { document.getElementById('historyDisplay').innerHTML = '<div>Aucune transaction</div>'; return; }
             let html = `<h4>${escapeHtml(data.userName)}</h4>`;
             data.history.forEach(t => {
-                const date = new Date(t.date).toLocaleString();
-                let direction = t.type === 'deposit' ? '💰 Dépôt' : (t.type === 'withdraw' ? '💸 Retrait' : '🔄 Virement');
+                const date = new Date(t.date).toLocaleString('fr-FR');
+                let typeLib = t.type === 'deposit' ? 'Depot' : (t.type === 'withdraw' ? 'Retrait' : 'Virement');
                 html += `<div style="border-left:4px solid #2c7da0; padding:12px; margin-bottom:12px; background:#f9f9ff; border-radius:20px;">
-                            <strong>${direction}</strong> — ${t.amount} €<br>
+                            <strong>${typeLib}</strong> — ${t.amount} FCFA<br>
                             <small>${date}</small><br>
                             <span style="font-size:0.8rem;">${t.description || ''}</span>
                          </div>`;
@@ -378,7 +448,7 @@
         } catch(e) { document.getElementById('historyDisplay').innerHTML = `<div class="error">Erreur: ${e.message}</div>`; }
     }
 
-    // === Onglets ===
+    // --- Onglets ---
     function activateTab(tabId) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.getElementById(`panel-${tabId}`).classList.add('active');
@@ -390,12 +460,11 @@
         if (tabId === 'history') loadUsers().then(() => populateUserSelects());
     }
 
-    // === Utility ===
     function escapeHtml(str) {
         return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
     }
 
-    // === Événements ===
+    // --- Événements ---
     document.getElementById('createBankBtn')?.addEventListener('click', createBank);
     document.getElementById('refreshBanksBtn')?.addEventListener('click', loadBanks);
     document.getElementById('createUserBtn')?.addEventListener('click', createUser);

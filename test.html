@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test banques</title></head>
+<body>
+  <select id="userBankId"></select>
+  <script>
+    fetch('/api/banks')
+      .then(r => r.json())
+      .then(data => {
+        const sel = document.getElementById('userBankId');
+        data.banks.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.id;
+          opt.textContent = b.name;
+          sel.appendChild(opt);
+        });
+      })
+      .catch(e => console.error(e));
+  </script>
+</body>
+</html>
